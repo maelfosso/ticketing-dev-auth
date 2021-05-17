@@ -2,10 +2,16 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import { app } from '../app';
 
+jest.useFakeTimers();
+
 let mongo: MongoMemoryServer;
 
 beforeAll(async () => {
-  mongo = new MongoMemoryServer();
+  jest.setTimeout(30000);
+  
+  process.env.JWT_KEY = 'iwj;adf';
+
+  mongo = await MongoMemoryServer.create();
   const mongoUri = await mongo.getUri();
 
   await mongoose.connect(mongoUri, {
@@ -23,6 +29,10 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await mongo.stop();
-  await mongoose.connection.close();
+  try {
+    await mongo.stop();
+    await mongoose.connection.close();
+  } catch (err) {
+    console.error(err);
+  }
 });
