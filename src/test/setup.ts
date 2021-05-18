@@ -2,21 +2,18 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import { app } from '../app';
 
-jest.useFakeTimers();
-
 let mongo: MongoMemoryServer;
 
 beforeAll(async () => {
-  jest.setTimeout(30000);
   
   process.env.JWT_KEY = 'iwj;adf';
 
-  mongo = await MongoMemoryServer.create();
-  const mongoUri = await mongo.getUri();
-
+  // mongo = await MongoMemoryServer.create();
+  // const mongoUri = await mongo.getUri();
+  const mongoUri = 'mongodb://localhost/ticketing-dev-auth-test'; 
   await mongoose.connect(mongoUri, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
   });
 });
 
@@ -29,10 +26,5 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  try {
-    await mongo.stop();
-    await mongoose.connection.close();
-  } catch (err) {
-    console.error(err);
-  }
+  await mongoose.connection.close();
 });
